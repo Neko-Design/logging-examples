@@ -34,11 +34,16 @@ def get_options(option_keys):
     logging.debug(f"Requesting Options: {option_keys}")
     try:
         response = make_request("/options", method="POST", data={"options": option_keys})
-        options = response.json()['options']
-        return {
-            "success": True,
-            "options": options
-        }
+        if response.ok:
+            options = response.json()['options']
+            logging.debug(f"Successful Response from Options Service: {options}")
+            return {
+                "success": True,
+                "options": options
+            }
+        else:
+            logging.error(f"Bad Response from Options Service: {response.status_code}")
+            return {"success": False}
     except requests.ConnectionError as error:
         logging.error(f"Connection Error Requesting Options: {error}")
         return {"success": False}
