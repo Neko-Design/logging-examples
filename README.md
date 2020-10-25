@@ -16,3 +16,24 @@ The server application for our example CLI, handles a single `/list` endpoint wh
 ## Downstream Server Application
 
 The downstream service for our example server application, pretending to be a sort of config endpoint. Handles a single `/options` endpoint that takes JSON POST requests and returns a dictionary of responses for each element in the request's `options` field. This call includes logic to timeout or error as configured in the constants at the top of the applications code under [app-downstream-server/src/main.py](app-downstream-server/src/main.py).
+
+# Getting Started
+
+To get set up to run the applications provided in this repository, install docker for your operating system from [the Docker website](https://www.docker.com/products/docker-desktop). Once installed, in the parent `logging-examples` directory, run `docker-compose up --build` to build and start the containers. You should end up with 3 containers running, from which you can see output in your terminal.
+
+Every 5 seconds, the client application will send a request to the server, which in turn will call the downstream application. This should produce the below output if everything is working correctly:
+
+```
+app-client_1             | INFO:root:Sending Request to Web Service: (GET) http://app-server:80/health
+app-server_1             | INFO:root:Responding to Healthcheck Request
+app-client_1             | INFO:root:Received Response from Web Service: 200
+app-client_1             | INFO:root:Web Service Status: pass
+app-client_1             | INFO:root:Sending Request to Web Service: (GET) http://app-server:80/list
+app-server_1             | DEBUG:root:Requesting Options: ['service-username', 'service_password']
+app-server_1             | INFO:root:Sending Request to Web Service: (POST) http://app-downstream-server:80/options
+app-downstream-server_1  | WARNING:root:Proceeding with request due to request number.
+app-downstream-server_1  | DEBUG:root:Processing request for options: [['service-username', 'service_password']]
+app-server_1             | INFO:root:Received Response from Web Service: 200
+app-client_1             | INFO:root:Received Response from Web Service: 200
+app-client_1             | INFO:root:Successful Response from List Service: {'list': {'options': {'service-username': 85, 'service_password': 85}, 'success': True}, 'message': 'List has been generated', 'success': True}
+```

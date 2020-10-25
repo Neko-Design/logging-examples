@@ -1,10 +1,13 @@
 version: "3.3"
 services:
-  app-server:
-    build: ./app-server
   app-downstream-server:
     build: ./app-downstream-server
+  app-server:
+    build: ./app-server
+    depends_on:
+      - app-downstream-server
   app-client:
     depends_on:
       - app-server
+      - app-downstream-server
     build: ./app-client
